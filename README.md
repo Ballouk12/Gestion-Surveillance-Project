@@ -28,3 +28,11 @@ Une application web complète pour la gestion des examens utilisant **Vite.js (R
    ```bash
    git clone [url-du-repo]
    cd [nom-du-projet]/backend
+   
+2. Créer une base de données MySQL nommée gestion_examens_db.
+
+bash
+Copy code
+mvn clean install
+mvn spring-boot:run
+
