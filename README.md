@@ -1,4 +1,4 @@
-# 📝 Système de Gestion des Examens
+# 📝 Système de Gestion de Surveillence
 
 Une application web complète pour la gestion des examens utilisant **Vite.js (React)** pour le frontend et **Spring Boot** pour le backend.
 
