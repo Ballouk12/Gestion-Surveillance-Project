@@ -71,6 +71,12 @@ Une application web complète pour la gestion des examens utilisant **Vite.js (R
 - Gestion des capacités.
 - Vérification des disponibilités.
 - Attribution optimisée.
+### Securite
+
+. **JWT** :
+   - Ajouté dans la section des technologies backend et détaillé sous "Sécurité et Authentification".
+2. **BCrypt** :
+   - Mentionné comme algorithme de hashage dans la section backend et détaillé dans la gestion des mots de passe.
 
 ### Dépannage
 
