@@ -28,4 +28,44 @@ public class Surveillance {
 	@ManyToOne
 	@JoinColumn(name = "local_id") // Clé étrangère pour référencer l'entité Local
 	private Local local;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTypeSurveillance() {
+		return typeSurveillance;
+	}
+
+	public void setTypeSurveillance(String typeSurveillance) {
+		this.typeSurveillance = typeSurveillance;
+	}
+
+	public Enseignant getEnseignant() {
+		return enseignant;
+	}
+
+	public void setEnseignant(Enseignant enseignant) {
+		this.enseignant = enseignant;
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public Local getLocal() {
+		return local;
+	}
+
+	public void setLocal(Local local) {
+		this.local = local;
+	}
 }

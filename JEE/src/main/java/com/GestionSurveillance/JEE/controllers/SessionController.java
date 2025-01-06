@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/sessions")
-@CrossOrigin(origins = "http://localhost:5173") // Permet les requêtes CORS pour le frontend
+@CrossOrigin("http://localhost:5173/")
 public class SessionController {
 
     @Autowired

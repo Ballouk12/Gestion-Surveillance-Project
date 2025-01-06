@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -78,6 +79,73 @@ public class ExamenService {
 
 		// Sauvegarder l'examen
 		return examenRepository.save(examen);
+	}
+
+	@Transactional
+	public Examen createExamenWithAutoAssignment(ExamenDTO examenDTO) {
+		// Créer un nouvel examen
+		Examen examen = new Examen();
+		examen.setModule(examenDTO.getModule());
+		examen.setNbEtudiants(examenDTO.getNbEtudiants());
+
+		// Charger la session
+		Session session = sessionRepository.findById(examenDTO.getSessionId())
+				.orElseThrow(() -> new RuntimeException("Session introuvable avec l'ID : " + examenDTO.getSessionId()));
+		examen.setSession(session);
+
+		// Charger l'enseignant
+		Enseignant enseignant = enseignantRepository.findById(examenDTO.getEnseignantId())
+				.orElseThrow(() -> new RuntimeException("Enseignant introuvable avec l'ID : " + examenDTO.getEnseignantId()));
+		examen.setEnseignant(enseignant);
+
+		// Récupérer tous les locaux disponibles pour la date et l'horaire donnés
+		List<Local> availableLocaux = localRepository.findLocauxByDateTime(examenDTO.getDate(), examenDTO.getDebut(), examenDTO.getFin());
+
+		if (availableLocaux.isEmpty()) {
+			throw new RuntimeException("Aucun local disponible pour la date et l'horaire spécifiés.");
+		}
+
+		// Trier les locaux par capacité (du plus petit au plus grand)
+		availableLocaux.sort(Comparator.comparingInt(Local::getCapacite));
+
+		// Initialiser les variables pour l'affectation
+		int remainingStudents = examenDTO.getNbEtudiants();
+		List<ExamLocal> examLocals = new ArrayList<>();
+
+		// Affecter les locaux jusqu'à ce que tous les étudiants soient placés
+		for (Local local : availableLocaux) {
+			if (remainingStudents <= 0) {
+				break;
+			}
+
+			ExamLocal examLocal = new ExamLocal();
+			examLocal.setLocal(local);
+			examLocal.setExamen(examen);
+			examLocal.setDate(examenDTO.getDate());
+			examLocal.setDebut(examenDTO.getDebut());
+			examLocal.setFin(examenDTO.getFin());
+			examLocals.add(examLocal);
+
+			remainingStudents -= local.getCapacite();
+		}
+
+		// Vérifier si tous les étudiants ont été placés
+		if (remainingStudents > 0) {
+			throw new RuntimeException("Capacité insuffisante des locaux disponibles pour accueillir tous les étudiants. " +
+					"Il manque des places pour " + remainingStudents + " étudiants.");
+		}
+
+		examen.setLocaux(examLocals);
+
+		// Sauvegarder l'examen
+		return examenRepository.save(examen);
+	}
+
+	// Méthode auxiliaire pour calculer la capacité totale des locaux
+	private int calculateTotalCapacity(List<Local> locaux) {
+		return locaux.stream()
+				.mapToInt(Local::getCapacite)
+				.sum();
 	}
 
 	@Transactional

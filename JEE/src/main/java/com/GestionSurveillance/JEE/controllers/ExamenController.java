@@ -27,7 +27,27 @@ public class ExamenController {
         System.out.println("Examens récupérés dans le contrôleur: " + examens);
         return ResponseEntity.ok(examens);
     }
+    @PostMapping("/create-auto")
+    public ResponseEntity<?> createExamenWithAutoAssignment(@RequestBody ExamenDTO examenDTO) {
+        try {
+            Examen examen = examenService.createExamenWithAutoAssignment(examenDTO);
+            return ResponseEntity.ok(examen);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest()
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
 
+        class ErrorResponse {
+            private String message;
+
+            public ErrorResponse(String message) {
+                this.message = message;
+            }
+            public String getMessage() {
+                return message;
+            }
+        }
     @GetMapping("/filter")
     public ResponseEntity<List<Examen>> getExamensByDateTime(
             @RequestParam("date")  @DateTimeFormat(pattern = "yyyy-MM-dd")Date date,

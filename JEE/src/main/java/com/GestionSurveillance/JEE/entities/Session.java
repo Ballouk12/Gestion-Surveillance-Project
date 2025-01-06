@@ -17,8 +17,7 @@ public class Session {
     
     private String dateDebut;  
     private String dateFin;    
-    private String typeSession; 
-
+    private String typeSession;
     private String debut1;
     private String fin1;
     private String debut2;

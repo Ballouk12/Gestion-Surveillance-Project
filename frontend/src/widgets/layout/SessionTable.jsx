@@ -44,26 +44,61 @@ import SessionUpdate from "./SessionUpdate";
       debut4: "16:00",
       fin4: "17:30",
     })
-    const [upOpen ,setUpOpen] = useState(false)
     const [open ,setOpen] = useState(false)
     const [renderUpdateItem, setRenderUpdateItem] = useState(false);
     const images = {"Session Rattrapage d'hiver" : "img/rattrapage.jpg" ,"Session Normale d'hiver" : "img/normal.jpg","Session Rattrapage de printemps":"img/rattrapage.jpg" ,"Session Normale de printemps" : "img/normal.jpg","Session Normale" : "img/normal.jpg"}
     
-  const getAllSessions = async () => {
-    try{
+    const getAllSessions = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await fetch("http://localhost:8080/api/sessions", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const result = await response.json();
+          setSessions(result);
+        } else {
+          console.error("Erreur:", response.status);
+        }
+      } catch (error) {
+        console.log("Erreur réseau:", error);
+      }
+    }
+
+    const attribuerSurveillances = async () => {
+      const token = localStorage.getItem("token");
   
-    const response = await fetch("http://localhost:8080/api/sessions" ,{method : "GET" , headers : {"Content-Type" : "application/json"},credentials: 'include'});
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Réponse du serveur :", result);
-      setSessions(result) ;
-  } else {
-      console.error("Erreur lors de l'envoi des données :", response.status);
-  }
-  } catch (error) {
-       console.log("Erreur réseau :", error); 
-  }
-  }
+      if (!token) {
+        console.log("Vous devez être connecté pour effectuer l'attribution automatique.");
+        return;
+      }
+        try {
+        const response = await fetch('http://localhost:8080/api/surveillances/attribution-globale', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          credentials: 'include'
+        });
+  
+        const data = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(data.error || 'Erreur lors de l\'attribution des surveillances');
+        }
+      } catch (err) {
+        console.log(err.message);
+      } finally {
+        console.log("erreur reseau ")
+      }
+    };
+  
 
   const update = (id) => {
     const findedItem = sessions.find(row => row.id === id);
@@ -74,25 +109,26 @@ import SessionUpdate from "./SessionUpdate";
     console.log("l'element trouver " , findedItem)
     setRenderUpdateItem(true)
   }
-  
   const deleteSession = async (id) => {
-    try {
-      const response = await fetch(`http://localhost:8080/api/sessions/${id}`, {
-        method: "DELETE",
-        credentials: "include", // Si vous gérez les cookies ou les sessions
-      });
-  
-      if (response.ok) {
-        console.log(`Session avec l'ID ${id} supprimée avec succès.`);
-        // Mettre à jour l'état ou effectuer une action après suppression
-        setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
-      } else {
-        console.error(`Erreur lors de la suppression de la session : ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Erreur réseau :", error);
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch(`http://localhost:8080/api/sessions/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      },
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
+    } else {
+      console.error(`Erreur: ${response.status}`);
     }
-  };
+  } catch (error) {
+    console.error("Erreur réseau:", error);
+  }
+};
   
   
   const handlePreDelete =  (id) => { 
@@ -231,7 +267,7 @@ import SessionUpdate from "./SessionUpdate";
                           </IconButton>
                         </Tooltip>
                         <Tooltip content="validate Session">
-                          <IconButton variant="text">
+                          <IconButton variant="text" onClick={() => attribuerSurveillances()}>
                             <CheckIcon className="h-4 w-4 text-green-500" />
                           </IconButton>
                         </Tooltip>

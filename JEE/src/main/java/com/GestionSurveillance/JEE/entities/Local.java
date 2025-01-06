@@ -31,6 +31,7 @@ public class Local {
 
 	private int nbSurveillance;
 	@OneToMany(mappedBy = "local", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Surveillance> surveillances;
 
 	public String getType() {return type;}

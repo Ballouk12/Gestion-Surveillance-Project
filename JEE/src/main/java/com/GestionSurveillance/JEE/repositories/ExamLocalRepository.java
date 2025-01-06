@@ -9,5 +9,4 @@ import java.util.List;
 
 public interface ExamLocalRepository extends JpaRepository<ExamLocal, Integer> {
     List<ExamLocal> findByLocalAndDateAndDebutBeforeAndFinAfter(Local local, Date date, String fin, String debut);
-
 }

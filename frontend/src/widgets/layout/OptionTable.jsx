@@ -32,33 +32,49 @@ import OptionUpdate from "./OptionUpdate";
     const [options ,setOptions] = useState([])
     const [filtredList,setFiltredList] = useState([]) ;
 
-
     useEffect(() => {
-      // Fonction pour récupérer les départements
+      // Fonction pour récupérer les options
       const fetchOptions = async () => {
+        const token = localStorage.getItem('token');  // Récupération du token JWT
         try {
-          const response = await fetch("http://localhost:8080/api/options");
+          const response = await fetch("http://localhost:8080/api/options", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+            },
+            credentials: 'include',
+          });
+    
           if (!response.ok) {
-            throw new Error("Erreur lors du chargement des départements");
+            throw new Error("Erreur lors du chargement des options");
           }
+    
           const data = await response.json();
           setOptions(data);
         } catch (err) {
           setError(err.message);
-        } 
+        }
       };
-  
+    
       fetchOptions();
-    }, [isInputOpen,upOpen]); 
-
+    }, [isInputOpen, upOpen]);  // Dépendances de useEffect
+    
   useEffect( () => {
     setFiltredList(options);
   },[options,isInputOpen])
   
   
   const deleteOption = (id) => {
+    const token = localStorage.getItem('token');  // Récupération du token JWT
+    
     fetch(`http://localhost:8080/api/options/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+      },
+      credentials: "include",  // Si nécessaire pour les cookies ou autres informations d'authentification
     })
       .then((response) => {
         if (response.ok) {
@@ -66,7 +82,7 @@ import OptionUpdate from "./OptionUpdate";
           setOptions(options.filter((option) => option.id !== id));
         } else {
           // Si la suppression échoue, on affiche un message d'erreur
-          alert("Erreur lors de la suppression du département");
+          alert("Erreur lors de la suppression de l'option");
         }
       })
       .catch((error) => {
@@ -74,7 +90,7 @@ import OptionUpdate from "./OptionUpdate";
         alert("Une erreur s'est produite");
       });
   };
-
+  
 
     const search = (e) => {
       const searchText = e.target.value.toLowerCase() ;

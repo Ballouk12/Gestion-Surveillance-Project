@@ -17,25 +17,22 @@ import {
     DialogBody,
     DialogFooter,
   } from "@material-tailwind/react";
-  import { Link, useNavigate } from "react-router-dom";
   import { useEffect, useState } from "react";
-import DepartmentUpdate from "./DepartmentUpdate";
-import { Upload } from "lucide-react";
+import FdaysUpdate from "./FdaysUpdate";
   
-  const TABLE_HEAD = ["Nom", "Action"];
+  const TABLE_HEAD = ["Jour", "Action"];
   
-  export function DepartementTable({isopen , setIsopen}) {
-    const navigate = useNavigate();
+  export function Fdays({isopen , setIsopen}) {
     const [open , setOpen] = useState(false)
     const [delId ,setDelId] = useState()
     const [upItem ,setUpItem] = useState()
     const [upOpen,seUptOpen] = useState(false)
-    const [departements ,setDepartements] = useState([])
+    const [days ,setDays] = useState([])
     const [filtredList,setFiltredList] = useState([]) ;
 
     useEffect(() => {
       // Fonction pour récupérer les départements
-      const fetchDepartements = async () => {
+      const fetchDays = async () => {
         try {
           // Récupérer le token depuis localStorage
           const token = localStorage.getItem("token");
@@ -46,7 +43,7 @@ import { Upload } from "lucide-react";
             return;
           }
     
-          const response = await fetch("http://localhost:8080/api/departements", {
+          const response = await fetch("http://localhost:8080/ferie-days", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -59,70 +56,24 @@ import { Upload } from "lucide-react";
           }
     
           const data = await response.json();
-          setDepartements(data); // Mise à jour des départements dans l'état
+          setDays(data); 
         } catch (err) {
-          console.error("Erreur lors de la récupération des départements :", err.message);
-          setError(err.message); // Mise à jour de l'état pour afficher un message d'erreur
+          console.error("Erreur lors de la récupération des Jours :", err.message);
+          setError(err.message); 
         }
       };
     
-      fetchDepartements(); // Appel de la fonction au montage du composant
-    }, []); 
+      fetchDays(); 
+    }, [upOpen,isopen]); 
     
 
   useEffect( () => {
-    setFiltredList(departements);
-  },[departements])
-  
-  const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleUpload = async () => {
-    if (!file) return;
-  
-    const formData = new FormData();
-    formData.append("file", file);
-    setLoading(true);
-  
-    try {
-      // Récupérer le token depuis localStorage
-      const token = localStorage.getItem("token");
-  
-      if (!token) {
-        console.error("Token non trouvé, utilisateur non authentifié");
-        alert("Vous devez être connecté pour effectuer cette action.");
-        setLoading(false);
-        return;
-      }
-  
-      const response = await fetch("http://localhost:8080/api/departements/upload", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête
-        },
-        body: formData, // Ajout du fichier dans le corps de la requête
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setDepartements([...departements, ...data]); // Mise à jour des départements
-        alert("Import réussi!");
-      } else {
-        alert("Erreur lors de l'import");
-      }
-    } catch (error) {
-      console.error("Erreur:", error);
-      alert("Erreur lors de l'import");
-    } finally {
-      setLoading(false); // Désactiver l'état de chargement
-      setFile(null); // Réinitialiser le fichier sélectionné
-    }
-  };
+    setFiltredList(days);
+  },[days])
   
 
-  const deleteDepartement = async (id) => {
+  const deleteDay = async (id) => {
     try {
-      // Récupérer le token depuis localStorage
       const token = localStorage.getItem("token");
   
       if (!token) {
@@ -131,7 +82,7 @@ import { Upload } from "lucide-react";
         return;
       }
   
-      const response = await fetch(`http://localhost:8080/api/departements/${id}`, {
+      const response = await fetch(`http://localhost:8080/ferie-days/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`, 
@@ -141,15 +92,13 @@ import { Upload } from "lucide-react";
   
       if (response.ok) {
         // Si la suppression réussit, on met à jour l'état
-        setDepartements(departements.filter((departement) => departement.id !== id));
-        alert("Département supprimé avec succès !");
+        setDays(days.filter((departement) => departement.id !== id));
       } else {
         // Si la suppression échoue, on affiche un message d'erreur
         const errorData = await response.json();
-        alert(errorData.message || "Erreur lors de la suppression du département");
       }
     } catch (error) {
-      console.error("Erreur réseau lors de la suppression du département:", error);
+      console.error("Erreur réseau lors de la suppression du Jour:", error);
       alert("Une erreur s'est produite. Veuillez réessayer.");
     }
   };
@@ -158,8 +107,8 @@ import { Upload } from "lucide-react";
 
     const search = (e) => {
       const searchText = e.target.value.toLowerCase() ;
-      const filtred  = departements.filter( row => 
-        row.nom.toLowerCase().startsWith(searchText)
+      const filtred  = days.filter( row => 
+        row.date.toLowerCase().startsWith(searchText)
       ) 
       setFiltredList(filtred);
       console.log("filtred list " ,filtredList);
@@ -188,10 +137,10 @@ import { Upload } from "lucide-react";
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Department
+              Jours Fériés.
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                Voir les informations sur tous les Départements
+                Voir les Jours Fériés existent
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
@@ -203,34 +152,6 @@ import { Upload } from "lucide-react";
                 <UserPlusIcon strokeWidth={2} className="h-4 w-4" /> Ajouter
               </Button>
             </div>
-            <div className="flex gap-2">
-                <input
-                  type="file"
-                  accept=".csv,.xlsx"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="hidden"
-                  id="file-upload"
-                />
-                <div
-                  onClick={() => document.getElementById('file-upload').click()}
-                  className="flex items-center gap-2 p-2 border rounded-md cursor-pointer hover:bg-gray-50"
-                >
-                  <Upload className="h-4 w-4" />
-                  <span className="text-sm">
-                    {loading ? 'Importation...' : 'Choisir un fichier'}
-                  </span>
-             </div>
-  {file && (
-    <Button
-      onClick={handleUpload}
-      disabled={loading}
-      className="flex items-center gap-2"
-    >
-      <Upload className="h-4 w-4" />
-      Importer
-    </Button>
-  )}
-</div>
 
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
@@ -270,7 +191,7 @@ import { Upload } from "lucide-react";
               </tr>
             </thead>
             <tbody>
-              {filtredList.map(({ nom, id }, index) => {
+              {filtredList.map(({ date, id }, index) => {
                 const isLast = index === filtredList.length - 1;
                 const classes = isLast
                   ? "p-4"
@@ -279,15 +200,13 @@ import { Upload } from "lucide-react";
                 return (
                   <tr key={id}>
                     <td className={classes}>
-                    <Link to ="/dashboard/enseignants"  state={{departement : id }}>
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {nom}
+                        {date}
                       </Typography>
-                      </Link>
                     </td>
                     <td className="p-4 flex items-center justify-center">
                         <Tooltip content="Edit Department">
@@ -329,17 +248,16 @@ import { Upload } from "lucide-react";
           >
             <span>Cancel</span>
           </Button>
-          <Button variant="gradient" color="green"  onClick={() => {deleteDepartement(delId) ; setOpen(false)}}>
+          <Button variant="gradient" color="green"  onClick={() => {deleteDay(delId) ; setOpen(false)}}>
             <span>Confirm</span>
           </Button>
         </DialogFooter>
       </Dialog>
       {upOpen && (
           <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-            <DepartmentUpdate upItem={upItem} setUpItem={setUpItem} seUptOpen={seUptOpen}/>
+            <FdaysUpdate upItem={upItem} setUpItem={setUpItem} setUptOpen={seUptOpen}/>
           </div>
         )}
     </>
     );
   }
-  

@@ -58,45 +58,45 @@ export default function CheckoutForm({setOpen}) {
       [name]: value,
     }));
   };
-   const send = async () => {
-  console.log(sessionData)
-  try{
 
-  const response = await fetch("http://localhost:8080/api/sessions" ,{method : "POST" , headers : {"Content-Type" : "application/json"},credentials: 'include', body : JSON.stringify(sessionData)});
-  if (response.ok) {
-    const result = await response.json();
-    console.log("Réponse du serveur :", result);
-    setSessionData(
-      {
-      typeSession: "Session Normale de printemps",
-      dateDebut: "",
-      dateFin: "",
-      debut1: "08:30",
-      fin1: "10:00",
-      debut2: "10:30",
-      fin2: "12:00",
-      debut3: "13:30",
-      fin3: "15:00",
-      debut4: "16:00",
-      fin4: "17:30",
+const send = async () => {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await fetch("http://localhost:8080/api/sessions", {
+      method: "POST", 
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      credentials: 'include',
+      body: JSON.stringify(sessionData)
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      setSessionData({
+        typeSession: "Session Normale de printemps",
+        dateDebut: "",
+        dateFin: "",
+        debut1: "08:30",
+        fin1: "10:00", 
+        debut2: "10:30",
+        fin2: "12:00",
+        debut3: "13:30",
+        fin3: "15:00",
+        debut4: "16:00",
+        fin4: "17:30",
+      });
+      setOpen(false);
+    } else {
+      console.error("Erreur:", response.status);
     }
-    ) 
-
-    setOpen(false)
-    console.log("le resultat ");
-    console.log(result);
-} else {
-    console.error("Erreur lors de l'envoi des données :", response.status);
-}
-} catch (error) {
-console.error("Erreur réseau :", error); 
+  } catch (error) {
+    console.error("Erreur réseau:", error);
+  }
 }
 
-}
-  // const send = () =>{
-  //   console.log("afficher les donnees a envoyer ");
-  //   console.log(sessionData)
-  // }
+
   return (
     <Card className="w-full max-w-[40rem] h-[90vh] flex flex-col justify-between overflow-auto p-4">
       {/* Header */}

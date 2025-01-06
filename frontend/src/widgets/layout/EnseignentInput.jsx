@@ -33,22 +33,31 @@ export default function EnseingnantInput({deptId,setOpen,setCount,count}) {
   })
 
   const addEnseignant = (enseignant) => {
-    console.log("les donnees a envoyee" ,enseignant)
-    console.log("l Id a envoyee" ,deptId)
-
+    console.log("Les données à envoyer", enseignant);
+    console.log("L'ID à envoyer", deptId);
+  
+    // Récupérer le token depuis localStorage
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      console.error("Token non trouvé, utilisateur non authentifié");
+      alert("Vous devez être connecté pour ajouter un enseignant.");
+      return;
+    }
+  
     fetch('http://localhost:8080/api/enseignants', {
       method: 'POST', // Utilisation de la méthode POST pour créer un nouvel enseignant
       headers: {
         'Content-Type': 'application/json', // Nous envoyons des données JSON
+        'Authorization': `Bearer ${token}`, // Ajouter le token JWT dans l'en-tête
       },
       body: JSON.stringify(enseignant), // Conversion de l'objet enseignant en chaîne JSON
     })
       .then((response) => {
         if (response.ok) {
-          setCount(count+1);
-          setOpen(false)
+          setCount(count + 1);
+          setOpen(false);
           return response.json(); // Si la requête réussie, on retourne la réponse sous forme de JSON
-          
         } else {
           throw new Error('Erreur lors de l\'ajout de l\'enseignant');
         }
@@ -61,6 +70,7 @@ export default function EnseingnantInput({deptId,setOpen,setCount,count}) {
         console.error('Erreur:', error);
       });
   };
+  
   
 
 

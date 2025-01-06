@@ -1,63 +1,65 @@
 package com.GestionSurveillance.JEE.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
-    private String first_name ;
-    private String last_name ;
-    private String login ;
-    private String password ;
+    private int id;
 
-    public Long getId() {
+    @Column(nullable = false)
+    private String nom;
+
+    private String prenom;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String hashedPassword;
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getNom() {
+        return nom;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
-    public String getLast_name() {
-        return last_name;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getLogin() {
-        return login;
+    public String getHashedPassword() {
+        return hashedPassword;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setHashedPassword(String hashedPassword) {
+        this.hashedPassword = hashedPassword;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
+

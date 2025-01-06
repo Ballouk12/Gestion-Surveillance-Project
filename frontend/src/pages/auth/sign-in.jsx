@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 export function SignIn() {
 
 const [data,setData] = useState({
-  "login" : "" ,
+  "email" : "" ,
   "password" : ""
 })
 const navigate = useNavigate()
@@ -21,16 +21,17 @@ const send = async () => {
   console.log(data)
   try{
 
-  const response = await fetch("http://localhost:8080/user/signin" ,{method : "POST" , headers : {"Content-Type" : "application/json"},credentials: 'include', body : JSON.stringify(data)});
+  const response = await fetch("http://localhost:8080/api/auth/login" ,{method : "POST" , headers : {"Content-Type" : "application/json"},credentials: 'include', body : JSON.stringify(data)});
   if (response.ok) {
-    const result = await response.json();
-    console.log("Réponse du serveur :", result);
+    if (!response.ok) throw new Error('Échec de connexion');
+    const data = await response.json();
+    localStorage.setItem('token', data.token);
     setData({
-      "login" : "",
+      "email" : "",
       "password" : ""
     }) 
     console.log("le resultat ");
-    console.log(result);
+    console.log(data);
     navigate("/sessions");
 } else {
     console.error("Erreur lors de l'envoi des données :", response.status);
@@ -55,8 +56,8 @@ console.error("Erreur réseau :", error);
             <Input
               size="lg"
               placeholder="name@mail.com"
-              name="login"
-              value={data.login}
+              name="email"
+              value={data.email}
               onChange={handleChange}
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{

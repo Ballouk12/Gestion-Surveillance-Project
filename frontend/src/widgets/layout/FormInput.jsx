@@ -8,16 +8,11 @@ import {
   Input,
   Button,
   Typography,
-  Tabs,
-  TabsHeader,
   TabsBody,
-  Tab,
   TabPanel,
-  Select,
-  Option,
+
 } from "@material-tailwind/react";
 import {
-  BanknotesIcon,
   CreditCardIcon,
   LockClosedIcon,
 } from "@heroicons/react/24/solid";

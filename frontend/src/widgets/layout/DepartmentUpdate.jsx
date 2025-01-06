@@ -13,7 +13,6 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import {
-    BackwardIcon,
   CreditCardIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
@@ -31,24 +30,36 @@ export default function DepartmentUpdate({upItem ,setUpItem ,seUptOpen}) {
 
   const updateDepartement = (id, nouveauNom) => {
     console.log("Nouveau nom envoyé : ", nouveauNom);
+  
+    // Récupérer le token depuis localStorage
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      console.error("Token non trouvé, utilisateur non authentifié");
+      alert("Vous devez être connecté pour effectuer cette action.");
+      return;
+    }
+  
     fetch(`http://localhost:8080/api/departements/${id}?nouveauNom=${encodeURIComponent(nouveauNom)}`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json", 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // Ajout du token dans l'en-tête
       },
     })
       .then((response) => {
         if (response.ok) {
-          seUptOpen(false); 
+          seUptOpen(false); // Fermer la fenêtre en cas de succès
+          console.log("Mise à jour du département réussie");
         } else {
-          alert("Erreur lors de la mise à jour du département");
+          console.error("Erreur lors de la mise à jour :", response.status);
         }
       })
       .catch((error) => {
-        console.error("Error updating departement:", error);
-        alert("Une erreur s'est produite");
+        console.error("Erreur réseau :", error);
       });
   };
+  
   
 
 

@@ -22,33 +22,50 @@ export default function OptionInput({ setInOpen }) {
     nom: "",
   });
 
-  // Récupération des départements
   useEffect(() => {
     const fetchDepartements = async () => {
+      const token = localStorage.getItem('token');  // Récupération du token JWT
       try {
-        const response = await fetch("http://localhost:8080/api/departements");
+        const response = await fetch("http://localhost:8080/api/departements", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+          },
+          credentials: 'include',
+        });
+  
         if (!response.ok) {
           throw new Error("Erreur lors du chargement des départements");
         }
+  
         const data = await response.json();
         setDepartements(data);
       } catch (err) {
         console.error("Erreur :", err.message);
       }
     };
-
+  
     fetchDepartements();
-  }, []);
+  }, []);  // Dépendances de useEffect
+  
 
   const send = async (e) => {
     e.preventDefault();
+  
+    const token = localStorage.getItem('token');  // Récupération du token JWT
+  
     try {
       const response = await fetch("http://localhost:8080/api/options", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+        },
         credentials: "include",
         body: JSON.stringify(data),
       });
+  
       if (response.ok) {
         const result = await response.json();
         console.log("Réponse du serveur :", result);
@@ -60,6 +77,7 @@ export default function OptionInput({ setInOpen }) {
       console.error("Erreur réseau :", error);
     }
   };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;

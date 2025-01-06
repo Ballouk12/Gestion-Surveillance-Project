@@ -25,23 +25,34 @@ export default function EnseingnantUpdate({upItem ,setUpItem,setOpen,count,setCo
 
   //================================ la methode qui renvoie les donnees a mettre ajour dans la base de donnees =====================================
 
-  const updateData = async (id,updatedEnseignant) => {
-    console.log("les donnees a mettre a jour avece id",updatedEnseignant ," id :" ,id)
+  const updateData = async (id, updatedEnseignant) => {
+    console.log("Les données à mettre à jour avec id", updatedEnseignant, "id :", id);
+  
+    // Récupérer le token depuis localStorage
+    const token = localStorage.getItem("token");
+  
+    if (!token) {
+      console.error("Token non trouvé, utilisateur non authentifié");
+      alert("Vous devez être connecté pour mettre à jour les données.");
+      return;
+    }
+  
     try {
-        const response = await fetch(`http://localhost:8080/api/enseignants/${id}`,  {
-        method: "PUT", 
+      const response = await fetch(`http://localhost:8080/api/enseignants/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Ajouter le token JWT dans l'en-tête
         },
         credentials: "include",
-        body: JSON.stringify(updatedEnseignant), 
+        body: JSON.stringify(updatedEnseignant),
       });
   
       if (response.ok) {
         const result = await response.json();
         console.log("Données mises à jour avec succès :", result);
-        setCount(count+1)
-        setOpen(false)
+        setCount(count + 1);
+        setOpen(false);
       } else {
         console.error("Erreur lors de la mise à jour des données :", response.status);
       }
@@ -49,6 +60,7 @@ export default function EnseingnantUpdate({upItem ,setUpItem,setOpen,count,setCo
       console.error("Erreur réseau :", error);
     }
   };
+  
   
 //   ================================ la methode de gestion les changements des entres ================================================
   const handleChange = (e) => {

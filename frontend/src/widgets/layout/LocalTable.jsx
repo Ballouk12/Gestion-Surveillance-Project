@@ -18,7 +18,6 @@ import {
     DialogFooter,
   } from "@material-tailwind/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import LocalUpdate from "./LocaleUpdate";
 import { Upload } from "lucide-react";
@@ -41,24 +40,29 @@ import { Upload } from "lucide-react";
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+  
     const formData = new FormData();
     formData.append('file', file);
-    
+  
+    const token = localStorage.getItem('token');  // Récupération du token JWT
     setLoading2(true);
+  
     try {
       const response = await fetch('http://localhost:8080/api/locaux/upload', {
         method: 'POST',
+        headers: {
+          "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+        },
         body: formData
       });
-      
+  
       if (response.ok) {
         const result = await response.json();
         console.log('Upload réussi:', result);
         // Réinitialiser le formulaire
         e.target.value = null;
         setFile(null);
-        setRefrech(!refrech)
+        setRefrech(!refrech);
       } else {
         console.error('Erreur lors de l\'upload');
       }
@@ -68,8 +72,7 @@ import { Upload } from "lucide-react";
       setLoading2(false);
     }
   };
-
-
+  
     const search = (e) => {
       const searchText = e.target.value.toLowerCase();
   
@@ -104,9 +107,15 @@ import { Upload } from "lucide-react";
   
     const handleDelete = async (id) => {
       console.log("ID à supprimer :", id); // Affiche l'ID à supprimer
+    
+      const token = localStorage.getItem('token');  // Récupération du token JWT
+    
       try {
         const response = await fetch(`http://localhost:8080/api/locaux/${id}`, {
           method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+          },
         });
     
         if (response.ok) {
@@ -120,25 +129,36 @@ import { Upload } from "lucide-react";
       }
     };
     
-  useEffect( () => {
-    setFilteredList(locaux)
-  },[locaux])
+    
+    useEffect(() => {
+      setFilteredList(locaux);
+    }, [locaux]);
+    
     const fetchLocaux = async () => {
+      const token = localStorage.getItem('token');  // Récupération du token JWT
+    
       try {
-        const response = await fetch("http://localhost:8080/api/locaux/all");
+        const response = await fetch("http://localhost:8080/api/locaux/all", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+          }
+        });
+    
         if (!response.ok) {
-          console.log("les derreur",response.json)
           throw new Error(`Erreur HTTP : ${response.status}`);
         }
+    
         const data = await response.json();
         setFilteredList(data);
-        setLocaux(data) // Mise à jour des locaux
+        setLocaux(data);  // Mise à jour des locaux
         setLoading(false);
       } catch (err) {
         setLoading(false);
+        console.error("Erreur lors de la récupération des locaux :", err);
       }
     };
-  
+    
     useEffect(() => {
       fetchLocaux(); // Appel à l'API au montage du composant
     }, [refrech]);

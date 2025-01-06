@@ -1,7 +1,5 @@
 import {
-  Card,
   Input,
-  Checkbox,
   Button,
   Typography,
 } from "@material-tailwind/react";
@@ -12,13 +10,14 @@ import { Link, useNavigate } from "react-router-dom";
 export function SignUp() {
 
  
-const [data,setData] = useState({"first_name" : "","last_name" : "","login" : "","password" : ""});
+const [data,setData] = useState({"prenom" : "","nom" : "","email" : "","password" : ""});
 
 const navigate = useNavigate();
 const signUp = async () => {
+  
   console.log("Données envoyées :", JSON.stringify(data)); 
   try {
-      const response = await fetch("http://localhost:8080/user/signup", {
+      const response = await fetch("http://localhost:8080/api/auth/signup", {
           method: "POST", 
           headers: {
               "Content-Type": "application/json", 
@@ -31,9 +30,9 @@ const signUp = async () => {
           const result = await response.json();
           console.log("Réponse du serveur :", result);
           setData({
-            "first_name" : "",
-            "last_name" : "",
-            "login" : "",
+            "prenom" : "",
+            "nom" : "",
+            "email" : "",
             "password" : ""
           }) 
           navigate("/");
@@ -67,8 +66,8 @@ const signUp = async () => {
             <Input
               size="lg"
               placeholder="first name"
-              value={data.first_name}
-              onChange={(e) => setData((prevData) => ({...prevData ,first_name:e.target.value }))}
+              value={data.prenom}
+              onChange={(e) => setData((prevData) => ({...prevData ,prenom:e.target.value }))}
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -82,9 +81,9 @@ const signUp = async () => {
             <Input
               size="lg"
               placeholder="last name"
-              value={data.last_name}
+              value={data.nom}
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-              onChange={(e) => setData((prevData) => ({...prevData , last_name : e.target.value}))}
+              onChange={(e) => setData((prevData) => ({...prevData , nom : e.target.value}))}
               labelProps={{
                 className: "before:content-none after:content-none",
               }}
@@ -97,9 +96,9 @@ const signUp = async () => {
             <Input
               size="lg"
               placeholder="name@mail.com"
-              value={data.login}
+              value={data.email}
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-              onChange={(e) => setData((prevData) => ({...prevData , login : e.target.value}))}
+              onChange={(e) => setData((prevData) => ({...prevData , email : e.target.value}))}
               labelProps={{
               className: "before:content-none after:content-none",
               }}

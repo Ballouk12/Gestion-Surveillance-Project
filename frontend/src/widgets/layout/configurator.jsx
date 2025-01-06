@@ -5,7 +5,6 @@ import {
   IconButton,
   Switch,
   Typography,
-  Chip,
 } from "@material-tailwind/react";
 import {
   useMaterialTailwindController,

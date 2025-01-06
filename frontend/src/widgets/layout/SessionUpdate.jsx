@@ -26,10 +26,15 @@ export default function SessionUpdate({ updateItem, setUpdateItem ,setRenderUpda
   ]);
 
   const update = async (id) => {
+    const token = localStorage.getItem('token');  // Récupération du token JWT
+  
     try {
       const response = await fetch(`http://localhost:8080/api/sessions/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+        },
         credentials: "include",
         body: JSON.stringify(updateItem),
       });
@@ -37,7 +42,7 @@ export default function SessionUpdate({ updateItem, setUpdateItem ,setRenderUpda
       if (response.ok) {
         const result = await response.json();
         console.log("Réponse du serveur :", result);
-          setRenderUpdateItem(false);
+        setRenderUpdateItem(false);
         console.log("Le résultat :", result);
       } else {
         console.error("Erreur lors de l'envoi des données :", response.status);
@@ -46,6 +51,7 @@ export default function SessionUpdate({ updateItem, setUpdateItem ,setRenderUpda
       console.log("Erreur réseau :", error);
     }
   };
+  
   
 
   const handleDateChange = (ranges) => {
@@ -74,7 +80,6 @@ export default function SessionUpdate({ updateItem, setUpdateItem ,setRenderUpda
                 <BackwardIcon className="h-6 w-5 text-black"/>
             </IconButton>
         </Tooltip>
-      {/* Header */}
       <CardHeader
         color="gray"
         floated={false}

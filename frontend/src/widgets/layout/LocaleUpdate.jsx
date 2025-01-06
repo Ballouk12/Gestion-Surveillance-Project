@@ -14,18 +14,16 @@ import { CreditCardIcon } from "@heroicons/react/24/solid";
 
 export default function LocalUpdate({updateItem ,setUpdateItem}) {
   const [type, setType] = useState("card");
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    console.log(updateItem);
-    // Ajouter ici la logique pour soumettre les données (ex. API, etc.)
-  };
-  const handleUpdate = async (id, updatedLocal) => {
+  handleUpdate = async (id, updatedLocal) => {
+    const token = localStorage.getItem('token');  // Récupération du token JWT
     console.log("Local à modifier :", id, updatedLocal); // Affiche l'ID et les données mises à jour
+    
     try {
       const response = await fetch(`http://localhost:8080/api/locaux/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
         },
         body: JSON.stringify(updatedLocal),
       });
@@ -33,7 +31,6 @@ export default function LocalUpdate({updateItem ,setUpdateItem}) {
       if (response.ok) {
         const updatedData = await response.json();
         console.log("Local mis à jour avec succès :", updatedData);
-  
       } else {
         console.error(`Erreur lors de la mise à jour : code ${response.status}`);
       }
@@ -41,6 +38,7 @@ export default function LocalUpdate({updateItem ,setUpdateItem}) {
       console.error("Erreur réseau ou serveur lors de la mise à jour :", error.message);
     }
   };
+  
   
 
   const handleChange = (e) => {

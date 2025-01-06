@@ -10,6 +10,8 @@ import { Home, Surveillance, Department, } from "@/pages/dashboard";
 import Local from "./pages/dashboard/Local";
 import { ExamenTable } from "./widgets/layout/ExamenTable";
 import { OptionTable } from "./widgets/layout/OptionTable";
+import FdaysPage from "./widgets/layout/FdaysPage";
+import { Calendar } from "lucide-react";
 const icon = {
   className: "w-5 h-5 text-inherit",
 };
@@ -58,6 +60,12 @@ export const routes = [
         name: "Modules",
         path: "/Module",
         element: <OptionTable />
+      },
+      {
+        icon: <Calendar {...icon} />,
+        name: "Fdays",
+        path: "/Fdays",
+        element: <FdaysPage />
       },
     ],
   },

@@ -25,15 +25,26 @@ import { useEffect, useState } from "react";
    
   export  function EnseignantTable({updateItem ,setUpdateItem, isopen ,setIsopen ,setOpenUp,departementId,count}) {
     const [delId ,setDelId] = useState()
-    const [upOpen ,setUpOpen] = useState(false)
     const [open ,setOpen] = useState(false)
     const [renderUpdateItem, setRenderUpdateItem] = useState(false);
     const [enseignants, setEnseignants] = useState([]);
  
   
     const handleDelete = (enseignantId) => {
+      // Récupérer le token depuis localStorage
+      const token = localStorage.getItem("token");
+    
+      if (!token) {
+        console.error("Token non trouvé, utilisateur non authentifié");
+        alert("Vous devez être connecté pour supprimer un enseignant.");
+        return;
+      }
+    
       fetch(`http://localhost:8080/api/enseignants/${enseignantId}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Ajouter le token JWT dans l'en-tête
+        },
       })
         .then((response) => {
           if (!response.ok) {
@@ -46,15 +57,28 @@ import { useEffect, useState } from "react";
           setEnseignants(updatedEnseignants);
         })
         .catch((error) => {
-          
-       console.log(error.message);
+          console.log(error.message);
         });
     };
-
+    
     useEffect(() => {
       // Vérifier si un département est défini avant de lancer la requête
-        const fetchEnseignant = (departementId) =>{
-          fetch(`http://localhost:8080/api/enseignants/departement/${departementId}`) // Remplacez par l'URL de votre API
+      const fetchEnseignant = (departementId) => {
+        const token = localStorage.getItem("token"); // Récupérer le token depuis localStorage
+    
+        if (!token) {
+          console.error("Token non trouvé, utilisateur non authentifié");
+          alert("Vous devez être connecté pour accéder à cette information.");
+          return;
+        }
+    
+        fetch(`http://localhost:8080/api/enseignants/departement/${departementId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, // Ajouter le token dans l'en-tête
+          },
+        })
           .then((response) => {
             if (!response.ok) {
               throw new Error('Erreur lors de la récupération des enseignants');
@@ -62,18 +86,20 @@ import { useEffect, useState } from "react";
             return response.json();
           })
           .then((data) => {
-            console.log("les enseignents recuperer" ,data)
+            console.log("Les enseignants récupérés", data);
             setEnseignants(data);
           })
           .catch((error) => {
-            console.log("erreur ",error)
+            console.error("Erreur :", error);
           });
-      }
+      };
+    
       if (departementId) {
         fetchEnseignant(departementId.departement);
-        }
-       
+      }
+    
     }, [count]);
+    
     
   const update = (id) => {
     const findedItem = enseignants.find(row => row.id === id);

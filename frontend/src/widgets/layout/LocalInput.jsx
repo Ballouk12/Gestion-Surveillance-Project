@@ -27,13 +27,15 @@ export default function LocalInput() {
    setLocalData(prev => ({...prev,[name] :value}));
 
   }
-
   const createLocal = async (localData) => {
+    const token = localStorage.getItem('token');  // Récupération du token JWT
+  
     try {
       const response = await fetch("http://localhost:8080/api/locaux", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
         },
         body: JSON.stringify(localData),
       });
@@ -49,6 +51,7 @@ export default function LocalInput() {
       console.error("Erreur réseau :", error);
     }
   };
+  
   
 
   return (

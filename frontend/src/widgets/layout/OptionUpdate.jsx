@@ -28,21 +28,31 @@ export default function OptionUpdate({ setUpOpen, upItem, setUpdateItem }) {
   // Récupération des départements
   useEffect(() => {
     const fetchDepartements = async () => {
+      const token = localStorage.getItem('token');  // Récupération du token JWT
       try {
-        const response = await fetch("http://localhost:8080/api/departements");
+        const response = await fetch("http://localhost:8080/api/departements", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+          },
+          credentials: 'include'
+        });
+  
         if (!response.ok) {
           throw new Error("Erreur lors du chargement des départements");
         }
+  
         const data = await response.json();
         setDepartements(data);
       } catch (err) {
         console.error("Erreur :", err.message);
       }
     };
-
+  
     fetchDepartements();
   }, []);
-
+  
   useEffect(() => {
     if (upItem && upItem.departement) {
       const selectedDept = departements.find(
@@ -63,17 +73,24 @@ export default function OptionUpdate({ setUpOpen, upItem, setUpdateItem }) {
 
   const update = async (e) => {
     e.preventDefault();
-    console.log("update item est ",data)
+    console.log("update item est ", data);
+  
+    const token = localStorage.getItem('token');  // Récupération du token JWT
+  
     try {
       const response = await fetch(
         `http://localhost:8080/api/options/${id}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,  // Ajout du token JWT dans l'en-tête
+          },
           credentials: "include",
           body: JSON.stringify(data),
         }
       );
+  
       if (response.ok) {
         const result = await response.json();
         console.log("Réponse du serveur :", result);
@@ -85,6 +102,7 @@ export default function OptionUpdate({ setUpOpen, upItem, setUpdateItem }) {
       console.error("Erreur réseau :", error);
     }
   };
+  
 
   const handleDepartmentChange = (e) => {
     const selectedId = parseInt(e.target.value, 10);

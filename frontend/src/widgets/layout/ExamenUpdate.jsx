@@ -91,13 +91,26 @@ const ExamenUpdate = ({ setOpen, idsession, day, hour, updateItem }) => {
 
   const fetchLocaux = async () => {
     if (!day || !startHour[0] || !startHour[1]) return;
-    
+  
+    const token = localStorage.getItem('token');  // Récupérer le token JWT
+    if (!token) {
+      console.error("No token found, user may not be authenticated.");
+      return;
+    }
+  
     try {
       const response = await fetch(
         `http://localhost:8080/api/locaux/available?date=${day}&debut=${startHour[0]}&fin=${startHour[1]}`,
-        { credentials: "include" }
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Ajouter le token JWT dans l'en-tête
+          },
+          credentials: 'include',
+        }
       );
-      
+  
       if (!response.ok) throw new Error('Error fetching locaux');
       const data = await response.json();
       setLocaux(data);
@@ -105,6 +118,7 @@ const ExamenUpdate = ({ setOpen, idsession, day, hour, updateItem }) => {
       console.error("Error fetching locaux:", error);
     }
   };
+  
 
   const handleChange = (field, value) => {
     setData(prevData => ({ ...prevData, [field]: value }));
@@ -124,41 +138,51 @@ const ExamenUpdate = ({ setOpen, idsession, day, hour, updateItem }) => {
         : [...prev, local];
     });
   };
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      module: data.module,
-      nbEtudiants: parseInt(data.nbEtudiants, 10),
-      sessionId: parseInt(idsession, 10),
-      enseignantId: parseInt(data.enseignant, 10),
-      date: day,
-      debut: data.debut,
-      fin: data.fin,
-      locauxIds: selectedLocaux.map(local => local.id),
-    };
-
-    try {
-      const response = await fetch(`http://localhost:8080/api/examens/${updateItem.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error updating exam");
-      }
-
-      const result = await response.json();
-      console.log("Update successful:", result);
-      setOpen(false);
-    } catch (error) {
-      console.error("Error submitting update:", error.message);
-    }
+  const payload = {
+    module: data.module,
+    nbEtudiants: parseInt(data.nbEtudiants, 10),
+    sessionId: parseInt(idsession, 10),
+    enseignantId: parseInt(data.enseignant, 10),
+    date: day,
+    debut: data.debut,
+    fin: data.fin,
+    locauxIds: selectedLocaux.map(local => local.id),
   };
+
+  const token = localStorage.getItem('token');  // Récupérer le token JWT
+  if (!token) {
+    console.error("No token found, user may not be authenticated.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/api/examens/${updateItem.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,  // Ajouter le token JWT dans l'en-tête
+      },
+      credentials: "include",
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error updating exam");
+    }
+
+    const result = await response.json();
+    console.log("Update successful:", result);
+    setOpen(false);
+  } catch (error) {
+    console.error("Error submitting update:", error.message);
+  }
+};
+
 
   return (
     <Card className="w-full max-w-[24rem]">
