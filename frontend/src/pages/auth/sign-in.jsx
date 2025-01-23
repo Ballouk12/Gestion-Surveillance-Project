@@ -91,9 +91,9 @@ console.error("Erreur réseau :", error);
             <Link to="/auth/sign-up" className="text-gray-900 ml-1">Sign Up</Link>
           </Typography>
             <Typography variant="small" className="font-medium text-gray-900">
-              <a href="#">
+              <Link to="/auth/reset">
                 Forgot Password
-              </a>
+              </Link>
             </Typography>
           </div>
 

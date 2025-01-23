@@ -36,7 +36,6 @@ export default function EnseingnantInput({deptId,setOpen,setCount,count}) {
     console.log("Les données à envoyer", enseignant);
     console.log("L'ID à envoyer", deptId);
   
-    // Récupérer le token depuis localStorage
     const token = localStorage.getItem("token");
   
     if (!token) {
@@ -46,12 +45,12 @@ export default function EnseingnantInput({deptId,setOpen,setCount,count}) {
     }
   
     fetch('http://localhost:8080/api/enseignants', {
-      method: 'POST', // Utilisation de la méthode POST pour créer un nouvel enseignant
+      method: 'POST', 
       headers: {
-        'Content-Type': 'application/json', // Nous envoyons des données JSON
-        'Authorization': `Bearer ${token}`, // Ajouter le token JWT dans l'en-tête
+        'Content-Type': 'application/json', 
+        'Authorization': `Bearer ${token}`, 
       },
-      body: JSON.stringify(enseignant), // Conversion de l'objet enseignant en chaîne JSON
+      body: JSON.stringify(enseignant), 
     })
       .then((response) => {
         if (response.ok) {

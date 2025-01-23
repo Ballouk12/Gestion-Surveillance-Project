@@ -10,16 +10,6 @@ import routes from "@/routes";
 export function Auth() {
   const navbarRoutes = [
     {
-      name: "dashboard",
-      path: "/dashboard/home",
-      icon: ChartPieIcon,
-    },
-    {
-      name: "profile",
-      path: "/dashboard/home",
-      icon: UserIcon,
-    },
-    {
       name: "sign up",
       path: "/auth/sign-up",
       icon: UserPlusIcon,
@@ -27,6 +17,11 @@ export function Auth() {
     {
       name: "sign in",
       path: "/auth/sign-in",
+      icon: ArrowRightOnRectangleIcon,
+    },
+    {
+      name: "Rest password",
+      path: "/auth/rest",
       icon: ArrowRightOnRectangleIcon,
     },
   ];

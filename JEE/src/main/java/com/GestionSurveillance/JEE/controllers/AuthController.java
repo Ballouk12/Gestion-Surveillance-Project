@@ -4,7 +4,9 @@ import com.GestionSurveillance.JEE.config.JwtService;
 import com.GestionSurveillance.JEE.dto.AuthResponse;
 import com.GestionSurveillance.JEE.dto.LoginRequest;
 import com.GestionSurveillance.JEE.dto.SignupRequest;
+import com.GestionSurveillance.JEE.entities.PasswordResetToken;
 import com.GestionSurveillance.JEE.entities.User;
+import com.GestionSurveillance.JEE.repositories.TokenRepository;
 import com.GestionSurveillance.JEE.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenRepository tokenRepository;
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupRequest request) {
@@ -58,5 +62,26 @@ public class AuthController {
 
         String token = jwtService.generateToken(user.getEmail());
         return ResponseEntity.ok(new AuthResponse(token, user.getEmail()));
+    }
+    @PostMapping("/reset")
+    public String forgetPasswordProcess(@RequestParam("email") String email ) {
+        User user = userService.getUserByEmail(email);
+        String output ="";
+        if(user!=null) {
+            output = userService.sendEmail(user);
+        }
+        return output;
+    }
+
+    @PostMapping("/change")
+    public ResponseEntity<?> changePassword(@RequestParam("token") String token,@RequestParam("password") String newPassword){
+        String resultValidateToken = userService.validateToken(token);
+        if(resultValidateToken==null){
+            return ResponseEntity.badRequest().body("Invalid token");
+        }
+        PasswordResetToken resetToken = tokenRepository.findByToken(token);
+        User user = resetToken.getUser();
+        userService.changePassword(newPassword,user);
+        return ResponseEntity.ok("Mot de passe changer avec succes");
     }
 }

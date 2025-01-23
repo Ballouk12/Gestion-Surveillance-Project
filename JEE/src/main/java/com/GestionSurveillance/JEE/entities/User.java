@@ -20,6 +20,8 @@ public class User {
 
     @Column(nullable = false)
     private String hashedPassword;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private PasswordResetToken  passwordResetToken ;
 
     public String getPrenom() {
         return prenom;
